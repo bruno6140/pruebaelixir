@@ -18,6 +18,8 @@ defmodule PruebaelixirWeb.Router do
     pipe_through :browser
 
     get "/", PageController, :home
+    get "/home", HomeController, :index
+    get "/chat", ChatController, :show
   end
 
   # Other scopes may use custom stacks.

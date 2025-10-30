@@ -1,0 +1,30 @@
+<h2>Chat en <%= @room %></h2>
+
+<input id="msgInput" placeholder="Escribe un mensaje..." />
+<button id="sendBtn">Enviar</button>
+<ul id="messages"></ul>
+
+<script src="https://cdn.jsdelivr.net/npm/phoenix@1.7.12/priv/static/phoenix.min.js"></script>
+<script>
+  const room = "<%= @room %>";
+  const socket = new Phoenix.Socket("/socket");
+  socket.connect();
+
+  const channel = socket.channel("room:" + room, {});
+  channel.join()
+    .receive("ok", resp => console.log("Conectado al lobby:", room))
+    .receive("error", resp => console.error("Error:", resp));
+
+  channel.on("new_msg", payload => {
+    const li = document.createElement("li");
+    li.innerText = `[${room}] ${payload.body}`;
+    document.getElementById("messages").appendChild(li);
+  });
+
+  document.getElementById("sendBtn").onclick = () => {
+    const msg = document.getElementById("msgInput").value;
+    if (msg.trim() === "") return;
+    channel.push("new_msg", { body: msg });
+    document.getElementById("msgInput").value = "";
+  };
+</script>
