@@ -1,4 +1,5 @@
 <h2>Chat en <%= @room %></h2>
+<h2>Mi usuario: <span id="myUid"></span></h2>
 
 <input id="msgInput" placeholder="Escribe un mensaje..." />
 <button id="sendBtn">Enviar</button>
@@ -12,12 +13,15 @@
 
   const channel = socket.channel("room:" + room, {});
   channel.join()
-    .receive("ok", resp => console.log("Conectado al lobby:", room))
+    .receive("ok", resp => {
+      console.log("Conectado al lobby:", room, "uid:", resp.uid)
+      document.getElementById("myUid").innerText = resp.uid
+    })
     .receive("error", resp => console.error("Error:", resp));
 
   channel.on("new_msg", payload => {
     const li = document.createElement("li");
-    li.innerText = `[${room}] ${payload.body}`;
+    li.innerText = `[${payload.uid}]: ${payload.body}`;
     document.getElementById("messages").appendChild(li);
   });
 

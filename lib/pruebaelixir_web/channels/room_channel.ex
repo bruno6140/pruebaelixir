@@ -3,11 +3,13 @@ defmodule PruebaelixirWeb.RoomChannel do
 
   # Lobby dinámico
   def join("room:" <> _room_name, _params, socket) do
-    {:ok, socket}
+    uid = socket.assigns[:uid] || "desconocido"
+    {:ok, %{uid: uid}, socket}
   end
 
   def handle_in("new_msg", %{"body" => body}, socket) do
-    broadcast!(socket, "new_msg", %{body: body})
+    uid = socket.assigns[:uid] || "desconocido"
+    broadcast!(socket, "new_msg", %{body: body, uid: uid})
     {:noreply, socket}
   end
 end
